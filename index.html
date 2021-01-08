@@ -28,14 +28,15 @@
             </div>
             <div class="col-lg-2"></div>
         </div>
+        <div class="row">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <ul class="list-group" id="display">
 
-        <div class="col-lg-2"></div>
-        <div class="col-lg-8">
-            <ul class="list-group" id="display">
-
-            </ul>
+                </ul>
+            </div>
+            <div class="col-lg-2"></div>
         </div>
-        <div class="col-lg-2"></div>
     </div>
     </div>
 
@@ -54,36 +55,83 @@
             const form = $("#form");
             const todoUserInput = $('#todoUserInput');
 
+            const getTodos = () => {
+                fetch('/getTodos', { method: "GET" }).then((response) => {
+                    return response.json();
+                }).then((data) => {
+                    console.log(data);
+                    displayTodos(data);
+                })
+            }
+            getTodos();
+
             const resetTodosInput = () => {
                 todoUserInput.val('');
             }
 
-            const buildIDS = (todo) => {
-                return {
-                    editID: "edit_" + todo._id,
-                    deleteID: "delete_" + todo._id,
-                    listItemID: "listItem_" + todo._id,
-                    todoID: "todo_" + todo._id
-                }
-            }
-
-            const buildTemplate = (todo, ids) => {
-                return `<li class="list-group-item" id="${ids.listItemID}">
+            function deletelist(todo,deleteID){   
+                console.log(deleteID);
+                console.log(listItemID);
+                fetch(`/${todo._id}`, {
+                    method: "DELETE"
+                }).then((response) => {
+                    return response.json();
+                }).then((data) => {
+                    if (data.ok == 1) {
+                        $(`#${listItemID}`).remove();
+                    }
+                });
+                
+            };
+            const buildTemplate = (todo) => {
+                let id=todo._id
+                return `<li class="list-group-item" id="">
                             <div class="row">
-                                <div class="col-md-4" id="${ids.listItemID}">${todo.todo}</div>
+                                <div class="col-md-4" id="">${todo.todo}</div>
                                 <div class="col-md-4"></div>
                                 <div class="col-md-4 text-right">
-                                    <button type="button" class="btn btn-secondary id=""${ids.editID}">Edit</button>
-                                    <button type="button" class="btn btn-danger id=""${ids.deleteID}">Delete</button>      
+                                    <button type="button" class="btn btn-secondary  id="">Edit</button>
+                                    <button type="button" class="btn btn-danger onclick="deletelist('${todo},${id}')" id="${todo._id}">Delete</button>    
                                 </div>
                             </div>  
-                        </li>`
+                        </li>` 
+                        
+            }
+      
+            const displayTodos = (data) => {
+                data.forEach((todo) => {
+                    // let ids = buildIDS(todo);
+                    display.append(buildTemplate(todo));
+                    // editTodo(todo, ids.todoID, ids.editID);
+                    // deleteTodo(todo, ids.listItemID, ids.deleteID);
+                });
             }
 
-           
+            form.submit((e) => {
+                e.preventDefault();
+                fetch('/', {
+                    method: 'POST',
+                    body: JSON.stringify({ todo: todoUserInput.val() }),
+                    headers: {
+                        "Content-Type": "application/json; charset = utf-8"
+                    }
+                }).then((response) => {
+                    return response.json();
+                }).then((data) => {
+                    if (data.result.ok == 1 && data.result.n == 1) {
+                        // let ids = buildIDS(data.document);
+                        display.append(buildTemplate(data.document));
+                        // editTodo(data.document,ids.todoID,ids.editID);
+                        // deleteTodo(data.document,ids.listItemID,ids.deleteID);
+                    }
+                    resetTodosInput();
+                });
+            })
+
+
+
 
         });
     </script>
 </body>
-
 </html>
