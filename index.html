@@ -26,7 +26,7 @@
             const todoUserInput = $('#todoUserInput');
 
             const getTodos = () => {
-                fetch('/getTodos', { method: "GET" }).then((response) => {
+                fetch('http://localhost:3000/getTodos', { method: "GET" }).then((response) => {
                     return response.json();
                 }).then((data) => {
                     console.log(data);
@@ -42,7 +42,7 @@
             const editTodo = (todo,todoID,editID)=>{
                 let editBtn = $(`#${editID}`);
                 editBtn.click(()=>{
-                    fetch(`/${todo._id}`,{
+                    fetch(`http://localhost:3000/${todo._id}`,{
                         method : "put",
                         headers : {
                             "Content-Type": "application/json; charset = utf-8"
@@ -63,7 +63,7 @@
                 
                 let deleteBtn = $(`#${deleteID}`);
                 deleteBtn.click(() => {
-                    fetch(`/${todo._id}`, {
+                    fetch(`http://localhost:3000/${todo._id}`, {
                         method: "DELETE"
                     }).then((response) => {
                         return response.json();
@@ -112,7 +112,7 @@
 
             form.submit((e) => {
                 e.preventDefault();
-                fetch('/', {
+                fetch('http://localhost:3000/', {
                     method: 'POST',
                     body: JSON.stringify({ todo: todoUserInput.val() }),
                     headers: {
